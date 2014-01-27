@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script type="text/javascript" src="bower_components/jquery/jquery.js"></script>
+  <script type="text/javascript">
+  document.createElement("a");
+  $(document).ready(function(){
+
+    $('.search').on("keyup", function(){
+
+      // if($(this).val() == '') {
+      //   $('.search-result').hide();
+      //   return;
+      // } 
+      // 
+        var the_value_entered = $(this).val();
+  
+  if(the_value_entered == '')
+  {
+
+    
+     $(".beforSearchRsult").hide();
+     $('.search-result').hide();
+    return;
+  }
+      var name  = $(this).val();
+
+       $.ajax({
+
+          url:  "get.php",
+          type: "POST",
+          cache: false,
+          data: "name=" + name,
+          dataType: "json",
+          beforeSend:function() {
+              $('.ajax-loader').fadeIn();
+
+          },
+
+          success:function(data) {
+          
+
+            var names = '';
+            $.each(data, function(key, name){
+
+              names += '<a class="returnedNames" href="#">' + name.ContactName + '</a><br />';
+
+            });
+             $(".beforSearchRsult").show();
+             $('.beforSearchRsult').html(names);
+
+
+                $('.returnedNames').on('click', function(){
+                
+                  var thisName = $(this).html();
+
+                  $('.search').val(thisName);
+                  $('.beforSearchRsult').hide();
+
+
+                });
+
+          },
+
+          error:function(e) {
+            console.log(e.responseText);
+          },
+
+          complete:function() {
+              $('.ajax-loader').fadeOut();
+            //$('.beforSearchRsult').html('');
+          },
+          timeout: 10000
+
+
+        });//ajax ends
+
+
+
+    
+
+
+    });
+
+
+
+
+  $('.searchBtn').on('click', function(){
+
+          var requestedInfo = $('.search').val();
+          var res = '';
+          $.ajax({
+
+            url:  "get.php",
+            type: "POST",
+            cache: false,
+            data: "info="+requestedInfo,
+            dataType: "json",
+            success:function(data) {
+
+              $.each(data, function(key, val){
+
+                  res += "<div><h4>contact name : " + val.ContactName;
+                  res += "<h4><h5>contact title : " + val.ContactTitle;
+                  res += "</h5><h5>company name  : " + val.CompanyName;
+                  res += "</h5><p>Address : " + val.Address;
+                  res += "</p><p>City : " + val.City;
+                  res += "</p><p>Region : " + val.Region;
+                  res += "</p><p>PostalCode : " + val.PostalCode;
+                  res += "</p><p>Country : " + val.Country;
+                  res += "</p><p>Phone : " + val.Phone;
+                  res += "</p><p>contact title : " + val.Fax + "</p></div><br><hr><br>";
+
+              });
+
+              $('.search-result').show();
+              $('.search-result').html(res);
+            }
+
+
+          });
+
+        });
+
+
+ });//end doc ready funct
+
+
+  </script>
+
+  <style type="text/css">
+
+      .main {
+        width:400px;
+        min-height:400px;
+        height:auto;
+       /*border: 1px solid #000;*/
+        margin:40px auto;
+      }
+
+
+      .preResult {
+          position:relative;
+         /* border:1px solid #666;*/
+          top:-1px;
+          padding:2px;
+          font-size:18px;
+          font-family:arial;
+          width:168px;
+          //margin:0 auto;
+          height:auto;
+          min-height:20px;
+          //display:none;
+        }
+
+      .beforSearchRsult{display:none;}
+      .ajax-loader{
+        display:none;
+      }
+
+  </style>
+</head>
+<body>
+  
+  <div class="main">
+    
+    <input type="text" class="search" name="search" value="">
+    <input type="submit" value="search" class="searchBtn"><span class="ajax-loader"><img src="ajax-loader.gif"></span>
+    <div class="beforSearchRsult"></div>
+
+    <div class="search-result">
+      
+
+    </div>
+
+  </div>
+
+
+</body>
+</html>
